@@ -55,128 +55,6 @@ void linkedList::deleteNode(int val, HWND hWnd) {
     if(Val2 == IDOK)
     {return;}
 }
-
-
-
-void linkedList::addQuantity(int position, int add, HWND hWnd) {
-    Node* currentNode = head;
-    int currentPosition = 1;
-
-    while (currentNode != nullptr && currentPosition < position) {
-        currentNode = currentNode->next;
-        currentPosition++;
-    }
-    if (currentNode == nullptr) {
-        Val2 = MessageBox(hWnd, "INVALID POSITION!", "Please Retry!", MB_OK | MB_ICONERROR);
-        if(Val2 == IDOK)
-        {return;}
-        return;
-    }
-    currentNode->quantity += add;
-    Val2 = MessageBox(hWnd, "Stock Added!\nDon't forget to re-display to see the edited records :>", "NICE!", MB_OK | MB_ICONEXCLAMATION);
-    if(Val2 == IDOK)
-    {return;}
-}
-
-void linkedList::print(float val) {
-    Node* go = head;
-    for (float i = 0; i < val; i++){go = go->next;}
-    cout << "Name: " << go->name << " Quantity: " << go->quantity << " Price: Rp. " << go->price <<endl;
-    }
-
-void linkedList::printAllName() {
-    Node* go = head;
-    cout << "No\tName" << endl;
-    while (go != nullptr) {
-        int i = 1;
-        cout << i <<".\t" << go->name <<endl;
-        go = go->next;
-        i++;
-    }
-    cout << endl;
-} 
-
-void linkedList::printAllNameQuantity() {
-    Node* go = head;
-    cout << "No \t Name \t Quantity" << endl;
-    while (go != nullptr) {
-        int i = 1;
-        cout << i <<".\t" << go->name << "\t" << go->quantity << endl;
-        go = go->next;
-        i++;
-    }
-    cout << endl;
-} 
-
-
-
-
-int linkedList::checkSize() {
-    Node* go = head;
-    int i = 0;
-    while (go != nullptr) {
-        i++;
-        go = go->next;
-    }
-    return i;
-}
-
-int linkedList::getQuantity(int input) {
-    Node* go = head;
-    int i=1;
-    while (i !=input) {
-        go = go->next;
-        i++;
-    }
-    return go->quantity;
-}
-
-float linkedList::getPrice(int input) {
-    Node* go = head;
-    int i=1;
-    while (i !=input) {
-        go = go->next;
-        i++;
-    }
-    return go->price;
-}
-
-string linkedList::getName(int input) {
-    Node* go = head;
-    int i=1;
-    while (i !=input) {
-        go = go->next;
-        i++;
-    }
-    return go->name;
-}
-
-string linkedList::getDate(int input) {
-    Node* go = head;
-    int i=1;
-    while (i !=input) {
-        go = go->next;
-        i++;
-    }
-    return go->date;
-}
-
-
-Node* linkedList::getHead(){
-    return head;
-}
-int functions::checkEmpty() {
-    linkedList catalog;
-    if (catalog.getHead() == nullptr) {
-        cout << "Linked list is empty." << endl;
-        return 0; // List is empty
-    } else {
-        int size = catalog.checkSize();
-        cout << "Linked list size: " << size << endl;
-        return size;
-    }
-}
-
 void linkedList::replaceValue(int position, string n, int what, HWND hWnd) {
     Node* currentNode = head;
     for (int currentPosition = 1; currentNode != nullptr && currentPosition != position; currentPosition++)
@@ -250,28 +128,248 @@ bool linkedList::DecreaseQuantity(int where, int howmuch, HWND hWnd)
     return true;
 }
 
-
-bool linkedList::DecreaseQuantity(int where, int howmuch, HWND hWnd)
-{
-    Node* currentNodeDec = head;
+void linkedList::addQuantity(int position, int add, HWND hWnd) {
+    Node* currentNode = head;
     int currentPosition = 1;
-    int placeholder = 0;
 
-    while (currentNodeDec != nullptr && currentPosition < where) {
-        currentNodeDec = currentNodeDec->next;
+    while (currentNode != nullptr && currentPosition < position) {
+        currentNode = currentNode->next;
         currentPosition++;
     }
-    if (currentNodeDec == nullptr) {
-        cout << "no stock to decrease" << endl;
-        return false;
+    if (currentNode == nullptr) {
+        Val2 = MessageBox(hWnd, "INVALID POSITION!", "Please Retry!", MB_OK | MB_ICONERROR);
+        if(Val2 == IDOK)
+        {return;}
+        return;
     }
-    if (currentNodeDec->quantity < howmuch) {
-    Val2 = MessageBox(hWnd, "Someone's Eager to Make Money ;>\nUnfortunately, Not Enough Stock :<", "Hint: Maybe Try Selling A Sufficient Amount :>", MB_OK | MB_ICONWARNING);
-    if (Val2 == IDOK)
-    {return false;}
+    currentNode->quantity += add;
+    Val2 = MessageBox(hWnd, "Stock Added!\nDon't forget to re-display to see the edited records :>", "NICE!", MB_OK | MB_ICONEXCLAMATION);
+    if(Val2 == IDOK)
+    {return;}
+}
+
+void linkedList::print(float val) {
+    Node* go = head;
+    for (float i = 0; i < val; i++){go = go->next;}
+    cout << "Name: " << go->name << " Quantity: " << go->quantity << " Price: Rp. " << go->price <<endl;
     }
-    currentNodeDec->quantity = currentNodeDec->quantity - howmuch;
-    return true;
+
+void linkedList::printAllName() {
+    Node* go = head;
+    cout << "No\tName" << endl;
+    while (go != nullptr) {
+        int i = 1;
+        cout << i <<".\t" << go->name <<endl;
+        go = go->next;
+        i++;
+    }
+    cout << endl;
+} 
+
+void linkedList::printAllNameQuantity() {
+    Node* go = head;
+    cout << "No \t Name \t Quantity" << endl;
+    while (go != nullptr) {
+        int i = 1;
+        cout << i <<".\t" << go->name << "\t" << go->quantity << endl;
+        go = go->next;
+        i++;
+    }
+    cout << endl;
+} 
+
+
+char* linkedList::printAll() {
+    Node* go = head;
+    char Out[10000];
+    Out[0] = '\0';
+    int i = 1;
+
+    while (go != nullptr) {
+        int IndLen = 0;
+        int QtyLen = 0;
+        char anotherI[5000];
+        sprintf(anotherI, "%1d", i);
+        while (anotherI[IndLen] != '\0')
+        {
+            IndLen++;
+        }
+        
+        char anotherQty[5000];
+        sprintf(anotherQty, "%1d", go->quantity);
+        while (anotherQty[QtyLen] != '\0')
+        {
+            QtyLen++;
+        }
+
+        char anotherPrice[5000];
+        sprintf(anotherPrice, "%.2f", go->price);
+
+        string name = go->name;
+        int length = name.length();
+        char* anotherName = new char[length + 1];
+        strcpy(anotherName, name.c_str());
+
+        string Date = go->date;
+        int lengthTwo = Date.length();
+        char* anotherDate = new char[lengthTwo + 1];
+        strcpy(anotherDate, Date.c_str());
+
+        char No[] = {"No"};
+        char DateArr[] = {"Date"};
+        char Name[] = {"Name"};
+        char Quantity[] = {"Quantity"};
+        char Price[] = {"Price"};
+        strcat(Out, PrintCategoryHeader(No, DateArr, Name, Quantity, Price, 
+        IndLen, lengthTwo, length, QtyLen));
+
+        strcat(Out, anotherI);
+        strcat(Out, ".\t");
+        strcat(Out, anotherDate);
+        strcat(Out, "\t");
+        strcat(Out, anotherName);
+        strcat(Out, "\t");
+        strcat(Out, anotherQty);
+        strcat(Out, "\t");
+        strcat(Out, anotherPrice);
+        strcat(Out, "\r\n");
+
+        go = go->next;
+        delete[] anotherName;
+        delete[] anotherDate;
+        i++;
+        strcat(Out, "\r\n");
+    }
+
+    return strdup(Out);
+}
+
+char* linkedList::PrintCategoryHeader(char* head1, char* head2, char* head3, char* head4, char* head5, 
+int LIndex, int LDate, int LName, int LQty)
+{
+    int i = 1;
+    const int charLim = 7;
+    char Out2[5000];
+    Out2[0] = '\0';
+
+    strcpy(Out2, head1);
+    strcat(Out2, "\t");
+    if (LIndex > charLim)
+    {
+        strcat(Out2, "\t");
+        if (LIndex % 8 == 0 && LIndex - 8 != 0)
+        {
+            int times = LIndex / 8;
+            times--;
+            while (times)
+            {
+                strcat(Out2, "\t");
+            }
+        }
+    }
+    
+    strcat(Out2, head2);
+    strcat(Out2, "\t");
+    if (LDate > charLim)
+    {
+        strcat(Out2, "\t");
+        if (LDate % 8 == 0 && LDate - 8 != 0)
+        {
+            int times = LDate / 8;
+            times--;
+            while (times)
+            {
+                strcat(Out2, "\t");
+            }
+        }
+    }
+
+    strcat(Out2, head3);
+    strcat(Out2, "\t");
+    if (LName > charLim)
+    {
+        strcat(Out2, "\t");
+        if (LName % 8 == 0 && LName - 8 != 0)
+        {
+            int times = LName / 8;
+            times--;
+            while (times)
+            {
+                strcat(Out2, "\t");
+            }
+        }
+    }
+
+    strcat(Out2, head4);
+    strcat(Out2, "\t");
+    if (LQty > charLim)
+    {
+        strcat(Out2, "\t");
+        if (LQty % 8 == 0 && LQty- 8 != 0)
+        {
+            int times = LQty / 8;
+            times--;
+            while (times)
+            {
+                strcat(Out2, "\t");
+            }
+        }
+    }
+
+    strcat(Out2, head5);
+    strcat(Out2, "\r\n");
+
+    return strdup(Out2);
+}
+
+int linkedList::checkSize() {
+    Node* go = head;
+    int i = 0;
+    while (go != nullptr) {
+        i++;
+        go = go->next;
+    }
+    return i;
+}
+
+int linkedList::getQuantity(int input) {
+    Node* go = head;
+    int i=1;
+    while (i !=input) {
+        go = go->next;
+        i++;
+    }
+    return go->quantity;
+}
+
+float linkedList::getPrice(int input) {
+    Node* go = head;
+    int i=1;
+    while (i !=input) {
+        go = go->next;
+        i++;
+    }
+    return go->price;
+}
+
+string linkedList::getName(int input) {
+    Node* go = head;
+    int i=1;
+    while (i !=input) {
+        go = go->next;
+        i++;
+    }
+    return go->name;
+}
+
+string linkedList::getDate(int input) {
+    Node* go = head;
+    int i=1;
+    while (i !=input) {
+        go = go->next;
+        i++;
+    }
+    return go->date;
 }
 
 void linkedList::sortData(HWND hWnd){
@@ -314,4 +412,19 @@ void linkedList::sortData(HWND hWnd){
     Val2 = MessageBox(hWnd, "Yay Record Sorted!", "Very Sorted OMG! :>", MB_OK | MB_ICONWARNING);
     if (Val2 == IDOK)
     {return;}
+}
+
+Node* linkedList::getHead(){
+    return head;
+}
+int functions::checkEmpty() {
+    linkedList catalog;
+    if (catalog.getHead() == nullptr) {
+        cout << "Linked list is empty." << endl;
+        return 0; // List is empty
+    } else {
+        int size = catalog.checkSize();
+        cout << "Linked list size: " << size << endl;
+        return size;
+    }
 }
