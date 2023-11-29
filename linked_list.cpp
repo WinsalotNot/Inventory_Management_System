@@ -249,3 +249,27 @@ bool linkedList::DecreaseQuantity(int where, int howmuch, HWND hWnd)
     currentNodeDec->quantity = currentNodeDec->quantity - howmuch;
     return true;
 }
+
+
+bool linkedList::DecreaseQuantity(int where, int howmuch, HWND hWnd)
+{
+    Node* currentNodeDec = head;
+    int currentPosition = 1;
+    int placeholder = 0;
+
+    while (currentNodeDec != nullptr && currentPosition < where) {
+        currentNodeDec = currentNodeDec->next;
+        currentPosition++;
+    }
+    if (currentNodeDec == nullptr) {
+        cout << "no stock to decrease" << endl;
+        return false;
+    }
+    if (currentNodeDec->quantity < howmuch) {
+    Val2 = MessageBox(hWnd, "Someone's Eager to Make Money ;>\nUnfortunately, Not Enough Stock :<", "Hint: Maybe Try Selling A Sufficient Amount :>", MB_OK | MB_ICONWARNING);
+    if (Val2 == IDOK)
+    {return false;}
+    }
+    currentNodeDec->quantity = currentNodeDec->quantity - howmuch;
+    return true;
+}
