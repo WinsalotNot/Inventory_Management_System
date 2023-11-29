@@ -273,3 +273,45 @@ bool linkedList::DecreaseQuantity(int where, int howmuch, HWND hWnd)
     currentNodeDec->quantity = currentNodeDec->quantity - howmuch;
     return true;
 }
+
+void linkedList::sortData(HWND hWnd){
+    if (!head || !head->next) {
+        Val2 = MessageBox(hWnd, "No Fields To Sort, Sowwy... :<", "I'm Useless :'<", MB_OK | MB_ICONWARNING);
+        if (Val2 == IDOK)
+        {return;}
+    }
+
+    Node* end;
+    Node* temp;
+    Node* prev;
+    Node* r;
+    Node* curr;
+        
+    for (end = nullptr; end!= head->next; end = prev){
+        for(r = prev = head; prev->next != end; r = prev, prev = prev->next){
+            curr = prev->next;
+            for(int n = 0; curr->name[n-1] == prev->name[n-1]; n++){
+
+                if(curr->name[n] < prev->name[n]){
+                    prev->next = curr->next;
+                    curr->next = prev;
+
+                    if(prev != head){
+                        r->next = curr;
+                    }else{
+                        head = curr;
+                    }
+                    temp = prev;
+                    prev = curr;
+                    curr = temp;
+                    
+                }
+
+            }   
+        }   
+            
+    }  
+    Val2 = MessageBox(hWnd, "Yay Record Sorted!", "Very Sorted OMG! :>", MB_OK | MB_ICONWARNING);
+    if (Val2 == IDOK)
+    {return;}
+}
