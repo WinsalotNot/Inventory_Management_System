@@ -323,6 +323,83 @@ LRESULT CALLBACK DialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     Val = MessageBox(hWnd, "Please Enter in Digits!", "INVALID TYPE", MB_OK | MB_ICONWARNING);
                     if (Val == IDOK)
                     {break;}
+                     case CONFIRM_STOCKADD:
+                char IndtoStock[100], HowMuchStock[1000];
+                GetWindowText(hStockWhich, IndtoStock, 100);
+                GetWindowText(hStockMuch, HowMuchStock, 1000);
+                if (strcmp(IndtoStock, "") == 0 && strcmp(HowMuchStock, "") == 0)
+                {
+                    Val = MessageBox(hWnd, "All Fields are Not Complete!", "ERROR!",
+                    MB_OK | MB_ICONWARNING);
+                    if (Val == IDOK)
+                    {return 0;}
+                } else if (isdigit(IndtoStock[0]) && isdigit(HowMuchStock[0]))
+                {
+                    int TrueIndtoStock = atoi(IndtoStock);
+                    int TrueHowMuchStock = atoi(HowMuchStock);
+                    LL.addQuantity(TrueIndtoStock, TrueHowMuchStock, hWnd);
+                } else {
+                    Val = MessageBox(hWnd, "Please Enter in Digits!", "INVALID TYPE", MB_OK | MB_ICONWARNING);
+                    if (Val == IDOK)
+                    {break;}
+                }
+                break;
+            
+            case CONFIRM_SELL:
+                char IndtoSell[1000], HowMuchSell[1000];
+                GetWindowText(hSellWhich, IndtoSell, 1000);
+                GetWindowText(hSellMuch, HowMuchSell, 1000);
+                
+                if (LL.checkSize() == 0) {
+                    cout << "Output of func: " << func.checkEmpty() << endl;
+                    Val = MessageBox(hWnd, "Nothing to Sell :<", "Psst, You Should Stock Up ;>", MB_OK | MB_ICONERROR);
+                    if(Val == IDOK)
+                    {return 0;}
+                }
+                
+                if (strcmp(IndtoSell, "") == 0 && strcmp(HowMuchSell, "") == 0)
+                {
+                    Val = MessageBox(hWnd, "All Fields are Not Complete!", "ERROR!",
+                    MB_OK | MB_ICONWARNING);
+                    if (Val == IDOK)
+                    {return 0;}
+                } else if (isdigit(IndtoSell[0]) && isdigit(HowMuchSell[0]))
+                {
+                    int TrueIndtoSell = atoi(IndtoSell);
+                    int TrueHowMuchSell = atoi(HowMuchSell);
+
+                    if (TrueIndtoSell <= 0 || TrueIndtoSell > LL.checkSize()) {
+                        Val = MessageBox(hWnd, "No Item In That Index!", "Dummy, Check the Record", MB_OK | MB_ICONERROR);
+                        if (Val == IDOK) {break;}
+                        return 0;
+                    }
+                    int quantity_inven = LL.getQuantity(TrueIndtoSell);
+                    if(quantity_inven == 0){
+                        Val = MessageBox(hWnd, "This Item is Out of Stock!", "No Stock = No Money = Sad :'<", MB_OK | MB_ICONWARNING);
+                        if (Val == IDOK)
+                        {break;}
+                        return 0;
+                    }
+
+                    if(TrueHowMuchSell < 0){
+                        Val = MessageBox(hWnd, "Unfortunately, We Cannot Sell Negative Amounts :<", "Hint: Maybe Try Selling A Sufficient Amount :>", MB_OK | MB_ICONWARNING);
+                        if (Val == IDOK)
+                        {break;}
+                        return 0;
+                    } else {
+                        if (LL.DecreaseQuantity(TrueIndtoSell, TrueHowMuchSell, hWnd))
+                        {
+                            float earn = LL.getPrice(TrueIndtoSell) * static_cast<float>(TrueHowMuchSell);
+                            stackfunc.push(earn, LL.getName(TrueIndtoSell), TrueHowMuchSell, LL.getPrice(TrueIndtoSell));
+
+                            char Earnings[100], Revenue[100];
+                            sprintf(Revenue, "%2f", earn);
+                            strcpy(Earnings, "");
+                            strcat(Earnings, "$ ");
+                            strcat(Earnings, Revenue);
+                            Val = MessageBox(hWnd, Earnings, "Your Earnings:", MB_OK | MB_ICONWARNING);
+                            if (Val == IDOK)
+                            {return 0;}
                 }
                 break;
             }
@@ -368,6 +445,37 @@ void RegisterDeletionDialogClass(HINSTANCE hInstance)
     DialogDClass.lpfnWndProc = DialogProc;
 
     RegisterClass(&DialogDClass);
+}
+void RegisterStockDialogClass(HINSTANCE hInstance)
+{
+    const TCHAR* CLASS_NAME = _T("myStockDialog");
+    
+    WNDCLASS DialogSClass = {};
+
+    DialogSClass.lpszClassName = CLASS_NAME;
+    DialogSClass.hInstance = hInstance; 
+    DialogSClass.hbrBackground = (HBRUSH) COLOR_WINDOW;
+    DialogSClass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+    DialogSClass.hCursor = LoadCursor(NULL, IDC_CROSS);
+    DialogSClass.lpfnWndProc = DialogProc;
+
+    RegisterClass(&DialogSClass);
+}
+
+void RegisterSellDialogClass(HINSTANCE hInstance)
+{
+    const TCHAR* CLASS_NAME = _T("mySellDialog");
+    
+    WNDCLASS DialogSellClass = {};
+
+    DialogSellClass.lpszClassName = CLASS_NAME;
+    DialogSellClass.hInstance = hInstance; 
+    DialogSellClass.hbrBackground = (HBRUSH) COLOR_WINDOW;
+    DialogSellClass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
+    DialogSellClass.hCursor = LoadCursor(NULL, IDC_CROSS);
+    DialogSellClass.lpfnWndProc = DialogProc;
+
+    RegisterClass(&DialogSellClass);
 }
 
 void DisplayEditDialog(HWND hWnd)
@@ -429,3 +537,70 @@ void DisplayDeletionDialog(HWND hWnd)
     EnableWindow(var.m_hWnd, false);
     std::cout << "Dislplayed Deletion Dialog Successfully!" << std::endl;
 }
+void DisplayStockDialog(HWND hWnd)
+{
+    hDlg3 = CreateWindowEx(0, _T("myStockDialog"),_T("Stock X Change"), WS_VISIBLE | WS_OVERLAPPEDWINDOW, 
+    250, 250, width+10, height+15, hWnd, NULL, NULL, NULL);
+
+        hDisplayInv = CreateWindowEx(0, _T("Edit"), _T(""), 
+        WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | ES_LEFT | ES_AUTOHSCROLL,
+        16, 28, 568, 190, hDlg3, NULL, NULL, NULL);
+
+        hDispButton = CreateWindowEx(0, _T("Button"), _T("Display Record"), WS_VISIBLE | WS_CHILD | ES_CENTER, 210, 225, 181, 30, hDlg3, (HMENU) DISPLAY_RECORD, 
+        NULL, NULL);
+
+        CreateWindowEx(0, _T("Static"), _T("Which Index Should We Add Stock to?:"), WS_VISIBLE | WS_CHILD | ES_LEFT, 16, 280, 222, 34, hDlg3,
+        NULL, NULL, NULL);
+
+        hStockWhich = CreateWindowEx(0, _T("Edit"), _T(""), WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL, 248, 280, 336, 34, hDlg3,
+        NULL, NULL, NULL);
+
+        CreateWindowEx(0, _T("Static"), _T("How Much Stock Should We Add?:"), WS_VISIBLE | WS_CHILD | ES_LEFT, 16, 325, 222, 34, hDlg3,
+        NULL, NULL, NULL);
+
+        hStockMuch = CreateWindowEx(0, _T("Edit"), _T(""), WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL, 248, 325, 336, 34, hDlg3,
+        NULL, NULL, NULL);
+
+        CreateWindowEx(0, _T("Button"), _T("Confirm Input"), WS_VISIBLE | WS_CHILD | ES_CENTER, 200, 400, 200, 60, hDlg3, (HMENU)CONFIRM_STOCKADD, NULL, NULL);
+
+    EnableWindow(var.m_hWnd, false);
+    std::cout << "Dislplayed Stock Dialog Successfully!" << std::endl;
+}
+
+void DisplaySellDialog(HWND hWnd)
+{
+    hDlg4 = CreateWindowEx(0, _T("mySellDialog"),_T("Sell Inventory = Get Money = Happy"), WS_VISIBLE | WS_OVERLAPPEDWINDOW, 
+    250, 250, width+10, height+15, hWnd, NULL, NULL, NULL);
+
+        hDisplayInv = CreateWindowEx(0, _T("Edit"), _T(""), 
+        WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | ES_LEFT | ES_AUTOHSCROLL,
+        16, 28, 568, 140, hDlg4, NULL, NULL, NULL);
+
+        hDispButton = CreateWindowEx(0, _T("Button"), _T("Display Record"), WS_VISIBLE | WS_CHILD | ES_CENTER, 16, 425, 184, 47, hDlg4, (HMENU) DISPLAY_RECORD, 
+        NULL, NULL);
+
+        hDisplayInv2 = CreateWindowEx(0, _T("Edit"), _T(""), 
+        WS_VISIBLE | WS_CHILD | WS_BORDER | WS_VSCROLL | WS_HSCROLL | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL | ES_LEFT | ES_AUTOHSCROLL,
+        16, 180, 568, 140, hDlg4, NULL, NULL, NULL);
+
+        hDispButton2 = CreateWindowEx(0, _T("Button"), _T("Display Sell History"), WS_VISIBLE | WS_CHILD | ES_CENTER, 208, 425, 184, 47, hDlg4, (HMENU) DISPLAY_SELL, 
+        NULL, NULL);
+
+        CreateWindowEx(0, _T("Static"), _T("Which Stock to Sell?:"), WS_VISIBLE | WS_CHILD | ES_LEFT, 16, 330, 222, 34, hDlg4,
+        NULL, NULL, NULL);
+
+        hSellWhich = CreateWindowEx(0, _T("Edit"), _T(""), WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL, 248, 330, 336, 34, hDlg4,
+        NULL, NULL, NULL);
+
+        CreateWindowEx(0, _T("Static"), _T("How Much Stock Should We Sell?:"), WS_VISIBLE | WS_CHILD | ES_LEFT, 16, 377, 222, 34, hDlg4,
+        NULL, NULL, NULL);
+
+        hSellMuch = CreateWindowEx(0, _T("Edit"), _T(""), WS_VISIBLE | WS_CHILD | WS_BORDER | ES_AUTOHSCROLL, 248, 377, 336, 34, hDlg4,
+        NULL, NULL, NULL);
+
+        CreateWindowEx(0, _T("Button"), _T("Confirm Sell"), WS_VISIBLE | WS_CHILD | ES_CENTER, 400, 425, 184, 47, hDlg4, (HMENU)CONFIRM_SELL, NULL, NULL);
+
+    EnableWindow(var.m_hWnd, false);
+    std::cout << "Dislplayed Sell Dialog Successfully!" << std::endl;
+}
+
