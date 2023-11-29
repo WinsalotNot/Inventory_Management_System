@@ -323,7 +323,10 @@ LRESULT CALLBACK DialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     Val = MessageBox(hWnd, "Please Enter in Digits!", "INVALID TYPE", MB_OK | MB_ICONWARNING);
                     if (Val == IDOK)
                     {break;}
-                     case CONFIRM_STOCKADD:
+                }
+                break;
+                
+            case CONFIRM_STOCKADD:
                 char IndtoStock[100], HowMuchStock[1000];
                 GetWindowText(hStockWhich, IndtoStock, 100);
                 GetWindowText(hStockMuch, HowMuchStock, 1000);
@@ -399,8 +402,22 @@ LRESULT CALLBACK DialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                             strcat(Earnings, Revenue);
                             Val = MessageBox(hWnd, Earnings, "Your Earnings:", MB_OK | MB_ICONWARNING);
                             if (Val == IDOK)
-                            {return 0;}
+                            {return 0;}   
+                        }
+                        break;
+                    }
+                } else {
+                    Val = MessageBox(hWnd, "Please Enter in Digits!", "INVALID TYPE", MB_OK | MB_ICONWARNING);
+                    if (Val == IDOK)
+                    {break;}
                 }
+                break;
+
+            case DISPLAY_SELL:
+                char SellOut[10000];
+                strcpy(SellOut, "");
+                strcpy(SellOut, stackfunc.printStack());
+                SetWindowText(hDisplayInv2, SellOut);
                 break;
             }
             break;
@@ -413,7 +430,6 @@ LRESULT CALLBACK DialogProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
-
 
 void RegisterEditDialogClass(HINSTANCE hInstance)
 {
@@ -446,6 +462,7 @@ void RegisterDeletionDialogClass(HINSTANCE hInstance)
 
     RegisterClass(&DialogDClass);
 }
+
 void RegisterStockDialogClass(HINSTANCE hInstance)
 {
     const TCHAR* CLASS_NAME = _T("myStockDialog");
@@ -477,7 +494,6 @@ void RegisterSellDialogClass(HINSTANCE hInstance)
 
     RegisterClass(&DialogSellClass);
 }
-
 void DisplayEditDialog(HWND hWnd)
 {
     hDlg = CreateWindowEx(0, _T("myEditDialog"),_T("Edit Record"), WS_VISIBLE | WS_OVERLAPPEDWINDOW, 
@@ -513,7 +529,6 @@ void DisplayEditDialog(HWND hWnd)
     EnableWindow(var.m_hWnd, false);
     std::cout << "Dislplayed Edit Dialog Successfully!" << std::endl;
 }
-
 void DisplayDeletionDialog(HWND hWnd)
 {
     hDlg2 = CreateWindowEx(0, _T("myDeletionDialog"),_T("Delete Record"), WS_VISIBLE | WS_OVERLAPPEDWINDOW, 
@@ -537,6 +552,7 @@ void DisplayDeletionDialog(HWND hWnd)
     EnableWindow(var.m_hWnd, false);
     std::cout << "Dislplayed Deletion Dialog Successfully!" << std::endl;
 }
+
 void DisplayStockDialog(HWND hWnd)
 {
     hDlg3 = CreateWindowEx(0, _T("myStockDialog"),_T("Stock X Change"), WS_VISIBLE | WS_OVERLAPPEDWINDOW, 
@@ -603,4 +619,3 @@ void DisplaySellDialog(HWND hWnd)
     EnableWindow(var.m_hWnd, false);
     std::cout << "Dislplayed Sell Dialog Successfully!" << std::endl;
 }
-
