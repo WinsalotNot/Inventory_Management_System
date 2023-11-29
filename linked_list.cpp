@@ -176,3 +176,76 @@ int functions::checkEmpty() {
         return size;
     }
 }
+
+void linkedList::replaceValue(int position, string n, int what, HWND hWnd) {
+    Node* currentNode = head;
+    for (int currentPosition = 1; currentNode != nullptr && currentPosition != position; currentPosition++)
+    {
+        currentNode = currentNode->next;
+    }
+    
+    if (currentNode == nullptr) {
+        Val2 = MessageBox(hWnd, "NOTHING TO REPLACE", "Please Retry!", MB_OK);
+        if(Val2 == IDOK)
+        {return;}
+    }
+
+    if (what == 1) {
+        currentNode->date = n;
+    } else if (what == 2) {
+        currentNode->name = n;
+    } else if (what == 3) {
+        char tempArr[5000];
+        strcpy(tempArr, n.c_str());
+        if (isdigit(tempArr[0]))
+        {
+            currentNode->quantity = stoi(n);
+        } else {
+            Val2 = MessageBox(hWnd, "Make sure the input new data is an integer!", "INVALID TYPE", MB_OK | MB_ICONWARNING);
+                if (Val2 == IDOK)
+                {return;}
+        }
+    } else if (what == 4) {
+        char tempArr2[5000];
+        strcpy(tempArr2, n.c_str());
+        if (isdigit(tempArr2[0]))
+        {
+            currentNode->price = stof(n);
+        } else {
+            Val2 = MessageBox(hWnd, "Make sure the input new data is an int or float!", "INVALID TYPE", MB_OK | MB_ICONWARNING);
+            if (Val2 == IDOK)
+            {return;}
+        }
+    } else {
+        Val2 = MessageBox(hWnd, "Data Field Does Not Exist!", "Please Retry!", MB_OK);
+        if(Val2 == IDOK)
+        {return;}
+    }
+
+    Val2 = MessageBox(hWnd, "Data Replaced!\nMake sure to re-display the screen by pressing the button again :>", "NICE!", MB_OK | MB_ICONEXCLAMATION);
+    if (Val2 == IDOK)
+    {return;}
+}
+
+bool linkedList::DecreaseQuantity(int where, int howmuch, HWND hWnd)
+{
+    Node* currentNodeDec = head;
+    int currentPosition = 1;
+    int placeholder = 0;
+
+    while (currentNodeDec != nullptr && currentPosition < where) {
+        currentNodeDec = currentNodeDec->next;
+        currentPosition++;
+    }
+    if (currentNodeDec == nullptr) {
+        cout << "no stock to decrease" << endl;
+        return false;
+    }
+    if (currentNodeDec->quantity < howmuch) {
+    Val2 = MessageBox(hWnd, "Someone's Eager to Make Money ;>\nUnfortunately, Not Enough Stock :<", "Hint: Maybe Try Selling A Sufficient Amount :>", MB_OK | MB_ICONWARNING);
+    if (Val2 == IDOK)
+    {return false;}
+    }
+    currentNodeDec->quantity = currentNodeDec->quantity - howmuch;
+    return true;
+}
